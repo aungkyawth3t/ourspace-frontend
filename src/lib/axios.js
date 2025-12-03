@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-    // The URL of your Laravel Backend
+    // Laravel Backend URL
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
     
     // 2. IMPORTANT: Allow cookies to be sent with requests
@@ -32,7 +32,6 @@ client.interceptors.response.use(
             localStorage.removeItem('user');
             // window.location.href = '/login'; // Optional: Force redirect
         }
-        
         throw error;
     }
 );

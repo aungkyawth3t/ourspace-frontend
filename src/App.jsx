@@ -1,42 +1,57 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState } from 'react'
-import Dashboard from './pages/dashboard'
-import PartnerLink from './pages/PartnerLink'
-import ProtectedRoute from './components/ProtectedRoute'
-import './App.css'
-
-const Login = ({ onLogin }) => {
-  return (
-    <div className="h-screen flex items-center justify-center bg-rose-50">
-      <button onClick={onLogin} className="bg-rose-500 text-white px-6 py-3 rounded-lg">
-        Simulate Login
-      </button>
-    </div>
-  )
-}
+import './App.css';
+import React, {useEffect, useState} from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Dashboard from './pages/dashboard';
+import Login from './pages/Login'; // to create
+import PartnerLink from './pages/PartnerLink';
+import ProtectedRoute from './components/ProtectedRoute';
+import client from './lib/axios';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState({ name: 'Alex', id: 1, couple_id: null });
+  // 1. auth check on app load
+  useEffect(() => {
+    //fetches logged-in user data from Laravel
+    const fetchUser = async () => {
+      try {
+        const response = await client.get('/user'); 
+        setUser(response.data);
+      } catch (error) {
+        console.log('User not authenticated.', error.message);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  const handleLogin = () => {
-    setUser({ name: 'Alex', id: 1, couple_id: 123 });
-  };
+  //loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-love-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-love-500"></div>
+      </div>
+    );
+  }
 
+ // main routing
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login setUser={setUser} />} />
 
-        {/* protected route */}
         <Route element={<ProtectedRoute user={user} />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={ <Dashboard /> }/>
-            <Route path="/link-partner" element={<PartnerLink setUser={setUser} />} />
+          <Route path="/" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <Navigate to="/link-partner" replace />} />
+          <Route path="/link-partner" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <PartnerLink setUser={setUser} />}/>
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
+        <Route path="*" element={<h1>404 | Page Not Found</h1>} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
