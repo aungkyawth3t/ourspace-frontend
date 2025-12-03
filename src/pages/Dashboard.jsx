@@ -19,19 +19,16 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-love-50 dark:bg-night-900 text-slate-800 dark:text-gray-100 transition-colors duration-300">
-      
-      {/* Navbar */}
       <nav className="p-6 flex justify-between items-center backdrop-blur-md bg-white/30 dark:bg-night-800/30 fixed w-full z-10">
         <h1 className="text-2xl font-serif font-bold text-love-600">OurSpace</h1>
         <div className="bg-white dark:bg-night-800 px-4 py-2 rounded-full shadow-sm flex items-center gap-2">
-          <Heart size={16} className="text-love-500 fill-love-500" />
+          <Heart size={16} className="text-love-500 fill-love-500"/>
           <span className="text-sm font-medium">{daysTogether} Days</span>
         </div>
       </nav>
 
       {/* Main Content */}
       <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
-        
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}

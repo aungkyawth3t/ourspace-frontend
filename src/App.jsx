@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useState } from 'react'
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/dashboard'
 import PartnerLink from './pages/PartnerLink'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
