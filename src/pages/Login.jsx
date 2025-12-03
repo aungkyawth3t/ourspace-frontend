@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import client from '../lib/axios';
+import { Link } from 'react-router-dom';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
@@ -42,7 +43,7 @@ const Login = ({ setUser }) => {
         className="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl"
       >
         <div className="text-center mb-8">
-          <Heart className="mx-auto text-love-500 fill-love-100" size={36} />
+          <Heart className="mx-auto text-rose-500 fill-rose-100" size={36} />
           <h1 className="text-3xl font-serif font-bold text-gray-800 mt-3">Welcome Back</h1>
           <p className="text-sm text-gray-500">Sign in to OurSpace</p>
         </div>
@@ -56,7 +57,7 @@ const Login = ({ setUser }) => {
               placeholder='yourname@example.com'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-love-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 outline-none transition-all"
               required
               autoComplete="email"
             />
@@ -69,7 +70,7 @@ const Login = ({ setUser }) => {
               placeholder='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-love-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 outline-none transition-all"
               required
               autoComplete="current-password"
             />
@@ -90,7 +91,7 @@ const Login = ({ setUser }) => {
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
-          Don't have an account? <a href="/register" className="text-love-500 font-medium hover:underline">Register Here</a>
+          Don't have an account? <Link to="/register" className="text-rose-400 font-medium hover:underline">Register Here</Link>
         </p>
       </motion.div>
     </div>

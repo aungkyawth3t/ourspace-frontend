@@ -6,6 +6,7 @@ import Login from './pages/Login'; // to create
 import PartnerLink from './pages/PartnerLink';
 import ProtectedRoute from './components/ProtectedRoute';
 import client from './lib/axios';
+import Register from './pages/Register';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -42,6 +43,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login setUser={setUser} />} />
+        <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register setUser={setUser} />} />
 
         <Route element={<ProtectedRoute user={user} />}>
           <Route path="/" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <Navigate to="/link-partner" replace />} />
