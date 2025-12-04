@@ -12,7 +12,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. auth check on app load
+  // auth check on load
   useEffect(() => {
     //fetches logged-in user data from Laravel
     const fetchUser = async () => {
@@ -20,7 +20,7 @@ function App() {
         const response = await client.get('/user');
         setUser(response.data);
       } catch (error) {
-        console.log('User not authenticated.', error.message);
+        console.log('User is not authenticated.', error.message);
         setUser(null);
       } finally {
         setLoading(false);

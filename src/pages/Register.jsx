@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { UserPlus, Lock } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import client from '../lib/axios';
 import { Link } from 'react-router-dom';
 
@@ -15,25 +15,24 @@ const Register = ({ setUser }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrors({}); // Clear previous errors
+    setErrors({}); // clear errors
 
     try {
-      // Step 1: Get the CSRF Cookie (Necessary for the POST request)
+      // Get CSRF Cookie
       await client.get('/sanctum/csrf-cookie');
-      // Step 2: Submit Registration Credentials
+      // submit credentials
       await client.post('/register', {
         name,
         email,
         password,
-        password_confirmation: passwordConfirmation // Laravel expects this name
+        password_confirmation: passwordConfirmation
       });
 
-      // Step 3: Fetch the newly authenticated user data
+      // Fetch newly authenticated user's data
       const userResponse = await client.get('/user');
       setUser(userResponse.data);
 
     } catch (err) {
-      // Log the full error for debugging
       console.error('Registration error:', err);
       console.error('Error response:', err.response);
       console.error('Error response data:', err.response?.data);
@@ -41,29 +40,28 @@ const Register = ({ setUser }) => {
       console.error('Error status:', err.response?.status);
 
       if (err.response) {
-        // response with status
         const status = err.response.status;
         const data = err.response.data;
 
-        if (status === 422) {
-          // Validation errors
+        if (status === 422) { 
           setErrors(data.errors || { general: ['Validation failed. Please check your input.'] });
-        } else if (status === 400) {
-          // Bad request
+        } 
+        else if (status === 400) { // bad request
           setErrors({ general: [data.message || 'Invalid request. Please check your input.'] });
-        } else if (status === 500) {
-          // Server error - try to show the actual error message
+        } 
+        else if (status === 500) {
           const errorMessage = data?.message || data?.error || 'Server error. Please try again later.';
           console.error('Server error details:', errorMessage);
           setErrors({ general: [errorMessage] });
-        } else {
-          // Other HTTP errors
+        } 
+        // other http errors
+        else {
           setErrors({
             general: [data.message || data.error || `Error ${status}: An unexpected error occurred.`]
           });
         }
-      } else if (err.request) {
-        // Request was made but no response received (network/CORS error)
+      } 
+      else if (err.request) {
         setErrors({
           general: ['Network error. Check that the API server is running and CORS is configured correctly.'],
         });

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-    // Laravel Backend URL
+    // laravel backend url
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
 
     // 2. IMPORTANT: Allow cookies to be sent with requests
