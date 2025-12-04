@@ -35,7 +35,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white dark:bg-night-800 rounded-3xl p-8 shadow-xl mb-8 flex flex-col items-center text-center relative overflow-hidden"
         >
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-love-100 via-love-500 to-love-100"></div>
+          <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-love-100 via-love-500 to-love-100"></div>
           <h2 className="text-3xl font-serif mb-2">Good Morning, Alex</h2>
           <p className="text-slate-500 dark:text-slate-400">Sarah is feeling <span className="text-love-500 font-bold">{mood}</span> today.</p>
         </motion.div>
@@ -79,7 +79,7 @@ const Dashboard = () => {
           </motion.div>
 
            {/* Card 3: Music Sync */}
-           <motion.div variants={item} className="md:col-span-2 bg-gradient-to-r from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg text-white">
+           <motion.div variants={item} className="md:col-span-2 bg-linear-to-r from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg text-white">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-white/20 rounded-full">
