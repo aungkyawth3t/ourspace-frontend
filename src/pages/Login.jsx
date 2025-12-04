@@ -18,7 +18,7 @@ const Login = ({ setUser }) => {
     try {
       // 1: Get the CSRF Cookie
       // Hitting this endpoint ensures the XSRF-TOKEN cookie is set in the browser
-      await client.get('/sanctum/csrf-cookie'); 
+      await client.get('/sanctum/csrf-cookie');
 
       // 2: Submit Credentials
       await client.post('/login', { email, password });
@@ -26,10 +26,43 @@ const Login = ({ setUser }) => {
       // 3: Fetch the authenticated user data
       const userResponse = await client.get('/user');
       setUser(userResponse.data); // Update App.jsx state, triggering redirect to Dashboard
-      
+
     } catch (err) {
-      const errorMessage = err.response?.data?.errors?.email?.[0] || 'Login failed. Check credentials.';
-      setError(errorMessage);
+      // Log the full error for debugging
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error response data:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      console.error('Error message:', err.message);
+
+      if (err.response) {
+        const status = err.response.status;
+        const data = err.response.data;
+
+        if (status === 422) {
+          // Validation errors
+          const validationError = data.errors?.email?.[0] || data.errors?.password?.[0] || data.message;
+          setError(validationError || 'Validation failed. Please check your input.');
+        } else if (status === 401) {
+          // Unauthorized - wrong credentials
+          setError(data.message || 'Invalid email or password. Please try again.');
+        } else if (status === 404) {
+          // Route not found
+          setError('Login endpoint not found. Please check your configuration.');
+        } else if (status === 500) {
+          // Server error
+          setError(data.message || 'Server error. Please try again later.');
+        } else {
+          // Other errors
+          setError(data.message || data.error || `Login failed (${status}). Please try again.`);
+        }
+      } else if (err.request) {
+        // Network error
+        setError('Network error. Check that the API server is running and CORS is configured correctly.');
+      } else {
+        // Other errors
+        setError(err.message || 'Login failed. Check credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -53,6 +86,7 @@ const Login = ({ setUser }) => {
             <label className="block text-sm text-start font-medium text-gray-700 mb-1" htmlFor="email">Email Address</label>
             <input
               type="email"
+              name='email'
               id="email"
               placeholder='yourname@example.com'
               value={email}
@@ -66,6 +100,7 @@ const Login = ({ setUser }) => {
             <label className="block text-sm text-start font-medium text-gray-700 mb-1" htmlFor="password">Password</label>
             <input
               type="password"
+              name='password'
               id="password"
               placeholder='password'
               value={password}

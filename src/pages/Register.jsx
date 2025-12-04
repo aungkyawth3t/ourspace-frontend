@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { UserPlus, Lock } from 'lucide-react';
-import client from '../lib/axios'; 
+import client from '../lib/axios';
 import { Link } from 'react-router-dom';
 
 const Register = ({ setUser }) => {
@@ -10,7 +10,7 @@ const Register = ({ setUser }) => {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({}); // To hold validation errors
+  const [errors, setErrors] = useState({});
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -19,34 +19,64 @@ const Register = ({ setUser }) => {
 
     try {
       // Step 1: Get the CSRF Cookie (Necessary for the POST request)
-      await client.get('/sanctum/csrf-cookie'); 
-
+      await client.get('/sanctum/csrf-cookie');
       // Step 2: Submit Registration Credentials
-      await client.post('/register', { 
-        name, 
-        email, 
-        password, 
+      await client.post('/register', {
+        name,
+        email,
+        password,
         password_confirmation: passwordConfirmation // Laravel expects this name
       });
 
       // Step 3: Fetch the newly authenticated user data
       const userResponse = await client.get('/user');
-      setUser(userResponse.data); // Update App.jsx state, triggering redirect to LinkPartner/Dashboard
-      
+      setUser(userResponse.data);
+
     } catch (err) {
-      if (err.response?.status === 422) {
-        setErrors(err.response.data.errors);
+      // Log the full error for debugging
+      console.error('Registration error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error response data:', err.response?.data);
+      console.error('Error message:', err.message);
+      console.error('Error status:', err.response?.status);
+
+      if (err.response) {
+        // response with status
+        const status = err.response.status;
+        const data = err.response.data;
+
+        if (status === 422) {
+          // Validation errors
+          setErrors(data.errors || { general: ['Validation failed. Please check your input.'] });
+        } else if (status === 400) {
+          // Bad request
+          setErrors({ general: [data.message || 'Invalid request. Please check your input.'] });
+        } else if (status === 500) {
+          // Server error - try to show the actual error message
+          const errorMessage = data?.message || data?.error || 'Server error. Please try again later.';
+          console.error('Server error details:', errorMessage);
+          setErrors({ general: [errorMessage] });
+        } else {
+          // Other HTTP errors
+          setErrors({
+            general: [data.message || data.error || `Error ${status}: An unexpected error occurred.`]
+          });
+        }
+      } else if (err.request) {
+        // Request was made but no response received (network/CORS error)
+        setErrors({
+          general: ['Network error. Check that the API server is running and CORS is configured correctly.'],
+        });
       } else {
-        setErrors({ general: ['An unexpected error occurred during registration.'] });
+        // Something else happened
+        setErrors({ general: [err.message || 'An unexpected error occurred during registration.'] });
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-love-50 flex items-center justify-center p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
@@ -61,6 +91,7 @@ const Register = ({ setUser }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">Name</label>
             <input
               type="text"
+              name='name'
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -75,6 +106,7 @@ const Register = ({ setUser }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">Email Address</label>
             <input
               type="email"
+              name='email'
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -89,6 +121,7 @@ const Register = ({ setUser }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">Password</label>
             <input
               type="password"
+              name='password'
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -98,11 +131,12 @@ const Register = ({ setUser }) => {
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password[0]}</p>}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password_confirmation">Confirm Password</label>
             <input
               type="password"
+              name='comfirm-password'
               id="password_confirmation"
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
