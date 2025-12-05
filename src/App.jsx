@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
 import Login from './pages/Login'; // to create
@@ -12,15 +12,15 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. auth check on app load
+  // auth check on load
   useEffect(() => {
     //fetches logged-in user data from Laravel
     const fetchUser = async () => {
       try {
-        const response = await client.get('/user'); 
+        const response = await client.get('/user');
         setUser(response.data);
       } catch (error) {
-        console.log('User not authenticated.', error.message);
+        console.log('User is not authenticated.', error.message);
         setUser(null);
       } finally {
         setLoading(false);
@@ -38,7 +38,7 @@ function App() {
     );
   }
 
- // main routing
+  // main routing
   return (
     <BrowserRouter>
       <Routes>
@@ -47,7 +47,7 @@ function App() {
 
         <Route element={<ProtectedRoute user={user} />}>
           <Route path="/" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <Navigate to="/link-partner" replace />} />
-          <Route path="/link-partner" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <PartnerLink setUser={setUser} />}/>
+          <Route path="/link-partner" element={user?.couple_id ? <Navigate to="/dashboard" replace /> : <PartnerLink setUser={setUser} />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
         <Route path="*" element={<h1>404 | Page Not Found</h1>} />
