@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Link as LinkIcon, Heart, Copy, Check } from 'lucide-react';
+import { Send, Link as LinkIcon, Heart, Copy, Check, CloudCog } from 'lucide-react';
 import client from '../lib/axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,7 +26,17 @@ const PartnerLink = ({ setUser }) => {
       const res = await client.post('/couple/invite', { email });
       setGeneratedCode(res.data.code); // Backend should return the code
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      console.log(err.response); // Validation Errors
+      if (err.response?.status === 422) {
+        const firstError = Object.values(err.response.data.errors)[0][0];
+        setError(firstError);
+      } 
+      else if (err.response?.data?.message) { // Server Message
+        setError(err.response.data.message);
+      } 
+      else { // Fallback
+        setError('Server error. Check console for details.');
+      }
     } finally {
       setLoading(false);
     }
