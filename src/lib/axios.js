@@ -11,7 +11,7 @@ const client = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest', // Helps Laravel identify AJAX requests
+        'X-Requested-With': 'XMLHttpRequest',
     },
 });
 
@@ -19,7 +19,7 @@ const client = axios.create({
 // This is required for Laravel Sanctum CSRF protection
 client.interceptors.request.use(
     (config) => {
-        // Get the XSRF-TOKEN cookie value
+        // get cookie value
         const xsrfToken = getCookie('XSRF-TOKEN');
         if (xsrfToken) {
             // Set it as a header for Laravel Sanctum
@@ -32,7 +32,7 @@ client.interceptors.request.use(
     }
 );
 
-// Helper function to get cookie value by name
+// helper function to read cookies by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -40,9 +40,8 @@ function getCookie(name) {
     return null;
 }
 
-// 4. Response Interceptor (Optional but Recommended)
-// This catches errors globally. If the backend says "Unauthenticated" (401),
-// we can redirect the user to login immediately.
+// Response Interceptor (optional)
+// catches errors globally. server says 401 Unauthorized,
 client.interceptors.response.use(
     (response) => {
         return response;
@@ -51,10 +50,9 @@ client.interceptors.response.use(
         const { response } = error;
 
         if (response && response.status === 401) {
-            // If the user is not logged in (401), clear local storage
-            // and redirect to login
+            // clear local storage and redirect to login
             localStorage.removeItem('user');
-            // window.location.href = '/login'; // Optional: Force redirect
+            // window.location.href = '/login';
         }
         throw error;
     }
